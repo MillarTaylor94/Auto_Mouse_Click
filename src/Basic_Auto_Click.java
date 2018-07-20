@@ -1,8 +1,11 @@
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.font.FontRenderContext;
+import java.util.Scanner;
 
 public class Basic_Auto_Click {
+
+    public static volatile boolean flag=true;
 Robot robot = new Robot();
 int xCord1, yCord1;
 int seconds,milliseconds;
@@ -10,7 +13,7 @@ int loopcount= 5;// remove this later, used for testing purposes
     //2500,860
 
     public static void main(String[] args) throws AWTException{
-        new Thread(new ReadInput()).start();
+       // new Thread(new ReadInput()).start();
       new Basic_Auto_Click(2500,860,5,0);
     }
     public Basic_Auto_Click() throws AWTException {
@@ -27,14 +30,16 @@ int loopcount= 5;// remove this later, used for testing purposes
         int totalMs= seconds*1000+milliseconds;
         robot.mouseMove(xCord,yCord1);
 
-        for(int i=0;i<loopcount;i++) {
+      Thread inputThread= new Thread( new ReadInput());
+      inputThread.start();
+       while(flag){
             leftClick();
             robot.delay(60);
             leftClick();
             robot.delay(totalMs);
         }
 
-
+System.out.println("We made it out alive!");
 
 
 
@@ -52,4 +57,29 @@ int loopcount= 5;// remove this later, used for testing purposes
 
 
     }
+
+
+
+    class ReadInput implements Runnable {
+
+        public void run(){
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Press Q to quit");
+
+
+            while(Basic_Auto_Click.flag){
+            System.out.println("in loop");
+             String x= sc.next().toString().toLowerCase();
+                System.out.println(x);
+                if (x.equals("q")) {
+                   Basic_Auto_Click.flag=false;
+                    System.out.println("Thread Terminated");
+                }
+
+
+
+            }
+        }
+    }
+
 }
